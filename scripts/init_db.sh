@@ -19,7 +19,9 @@ DB_NAME="${POSTGRES_DB:=newsletter}"
 DB_PORT="${POSTGRES_PORT:=5432}"
 
 if ! docker ps --filter "name=postgres" | grep 'Up' &>/dev/null; then
+  set +e
   docker rm postgres
+  set -e
   docker run -p "$DB_PORT:$DB_PORT" --name postgres -e POSTGRES_USER="$DB_USER" \
     -e POSTGRES_PASSWORD="$DB_PASSWORD" \
     -e POSTGRES_DB="$DB_NAME" \
