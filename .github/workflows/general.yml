@@ -32,9 +32,8 @@ jobs:
       SQLX_VERSION: 0.5.5
       SQLX_FEATURES: postgres
     steps:
-      # - run: sudo apt-get update && sudo apt-get install -y mold
       - name: Checkout repository
-      - uses: actions/checkout@v3
+        uses: actions/checkout@v2
       - name: Cache dependencies
         id: cache-dependencies
         uses: actions/cache@v2
@@ -86,7 +85,7 @@ jobs:
     name: Rustfmt
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v2
       - uses: actions-rs/toolchain@v1
         with:
           toolchain: stable
@@ -114,10 +113,10 @@ jobs:
       SQLX_FEATURES: postgres
     steps:
       - name: Checkout repository
-      - uses: actions/checkout@v3
+        uses: actions/checkout@v2
 
       - name: Install stable toolchain
-      - uses: actions-rs/toolchain@v1
+        uses: actions-rs/toolchain@v1
         with:
           components: clippy
           toolchain: stable
@@ -172,7 +171,7 @@ jobs:
       SQLX_FEATURES: postgres
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v2
 
       - name: Install stable toolchain
         uses: actions-rs/toolchain@v1
