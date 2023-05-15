@@ -4,6 +4,15 @@ pub struct Settings {
     pub application_port: u16,
 }
 
+impl Settings {
+    pub fn new() -> Result<Self, config::ConfigError> {
+        config::Config::builder()
+            .add_source(config::File::with_name("configuration"))
+            .build()?
+            .try_deserialize()
+    }
+}
+
 #[derive(serde::Deserialize)]
 pub struct DatabaseSettings {
     pub database_name: String,
@@ -22,8 +31,12 @@ impl DatabaseSettings {
     }
 }
 
-pub fn get_configuration() -> Result<Settings, config::ConfigError> {
-    let mut settings = config::Config::default();
-    settings.merge(config::File::with_name("configuration"))?;
-    settings.try_into()
+pub fn get_configuration() -> Settings {
+    match Settings::new() {
+        Ok(settings) => settings,
+        Err(error) => {
+            eprintln!("Failed to load configuration: {}", error);
+            std::process::exit(1);
+        }
+    }
 }
