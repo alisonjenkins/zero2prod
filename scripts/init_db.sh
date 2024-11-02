@@ -12,24 +12,22 @@ if ! command -v sqlx &>/dev/null; then
   echo >&2 "  cargo install --version=0.5.7 sqlx-cli --no-default-features --features postgres"
 fi
 
-
 DB_USER="${POSTGRES_USER:=postgres}"
 DB_PASSWORD="${POSTGRES_PASSWORD:=password}"
 DB_NAME="${POSTGRES_DB:=newsletter}"
 DB_PORT="${POSTGRES_PORT:=5432}"
 
-if ! docker ps --filter "name=postgres" | grep 'Up' &>/dev/null; then
+if ! podman ps --filter "name=postgres" | grep 'Up' &>/dev/null; then
   set +e
-  docker rm postgres
+  podman rm postgres
   set -e
-  docker run -p "$DB_PORT:$DB_PORT" --name postgres -e POSTGRES_USER="$DB_USER" \
+  podman run -p "$DB_PORT:$DB_PORT" --name postgres -e POSTGRES_USER="$DB_USER" \
     -e POSTGRES_PASSWORD="$DB_PASSWORD" \
     -e POSTGRES_DB="$DB_NAME" \
     -e POSTGRES_PORT="$DB_PORT" \
     -d postgres \
     postgres -N 1000
 fi
-
 
 export PGPASSWORD="$DB_PASSWORD"
 until psql -h localhost -U "$DB_USER" -p "$DB_PORT" -d postgres -c '\q' &>/dev/null; do
