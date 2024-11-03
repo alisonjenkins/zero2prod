@@ -1,14 +1,49 @@
 mod error;
 
 use color_eyre::Result;
-use error::SpawnAppErr;
-use sqlx::PgPool;
+use error::{ConfigureDatabaseError, SpawnAppErr};
+use sqlx::{Connection, Executor, PgConnection, PgPool};
 use std::net::TcpListener;
-use zero2prod::configuration::get_configuration;
+use uuid::Uuid;
+use zero2prod::configuration::{get_configuration, DatabaseSettings};
 
 pub struct TestApp {
     pub address: String,
     pub db_pool: PgPool,
+}
+
+pub async fn configure_database(
+    config: &DatabaseSettings,
+) -> Result<PgPool, ConfigureDatabaseError> {
+    let maintenance_settings = DatabaseSettings {
+        database_name: "postgres".to_string(),
+        password: "password".to_string(),
+        username: "postgres".to_string(),
+        ..config.clone()
+    };
+
+    let mut connection = PgConnection::connect(&maintenance_settings.connection_string())
+        .await
+        .map_err(|source| ConfigureDatabaseError::PostgresConnection { source })?;
+
+    connection
+        .execute(format!("CREATE DATABASE \"{}\"", config.database_name).as_str())
+        .await
+        .map_err(|source| ConfigureDatabaseError::CreateDatabase {
+            source,
+            db_name: config.database_name.clone(),
+        })?;
+
+    let pg_pool = PgPool::connect(&config.connection_string())
+        .await
+        .map_err(|source| ConfigureDatabaseError::PostgresPool { source })?;
+
+    sqlx::migrate!("./migrations")
+        .run(&pg_pool)
+        .await
+        .map_err(|source| ConfigureDatabaseError::Migrations { source })?;
+
+    Ok(pg_pool)
 }
 
 async fn spawn_app() -> Result<TestApp, SpawnAppErr> {
@@ -18,11 +53,15 @@ async fn spawn_app() -> Result<TestApp, SpawnAppErr> {
         .local_addr()
         .map_err(|source| SpawnAppErr::GetListenPort { source })?
         .port();
-    let configuration =
+    let mut configuration =
         get_configuration().map_err(|source| SpawnAppErr::GetConfiguration { source })?;
-    let db_pool = PgPool::connect(&configuration.database.connection_string())
+
+    configuration.database.database_name = Uuid::new_v4().to_string();
+
+    let db_pool = configure_database(&configuration.database)
         .await
-        .map_err(|source| SpawnAppErr::PostgresConnection { source })?;
+        .map_err(|source| SpawnAppErr::ConfigureDatabase { source })?;
+
     let server =
         zero2prod::startup::run(listener, db_pool.clone()).expect("Failed to bind address");
     let server_task = tokio::spawn(server);

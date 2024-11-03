@@ -13,7 +13,7 @@ impl Settings {
     }
 }
 
-#[derive(serde::Deserialize)]
+#[derive(serde::Deserialize, Clone)]
 pub struct DatabaseSettings {
     pub database_name: String,
     pub host: String,
