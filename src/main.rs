@@ -1,5 +1,5 @@
 use color_eyre::eyre::Result;
-use sqlx::{Connection, PgConnection};
+use sqlx::PgPool;
 use std::net::TcpListener;
 use zero2prod::{configuration::get_configuration, error::AppErr, startup::run};
 
@@ -7,11 +7,11 @@ use zero2prod::{configuration::get_configuration, error::AppErr, startup::run};
 async fn main() -> Result<(), AppErr> {
     color_eyre::install().map_err(|source| AppErr::ColorEyreInstall { source })?;
     let configuration = get_configuration();
-    let connection = PgConnection::connect(&configuration.database.connection_string())
+    let connection_pool = PgPool::connect(&configuration.database.connection_string())
         .await
         .map_err(|source| AppErr::PostgresConnection { source })?;
     let address = format!("127.0.0.1:{}", configuration.application_port);
     let listener = TcpListener::bind(address).map_err(|source| AppErr::Listen { source })?;
-    let _ = run(listener, connection).map_err(|source| AppErr::RunServer { source })?;
+    let _server = run(listener, connection_pool).map_err(|source| AppErr::RunServer { source })?;
     Ok(())
 }
