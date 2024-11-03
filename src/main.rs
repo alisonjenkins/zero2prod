@@ -6,7 +6,8 @@ use zero2prod::{configuration::get_configuration, error::AppErr, startup::run};
 #[tokio::main]
 async fn main() -> Result<(), AppErr> {
     color_eyre::install().map_err(|source| AppErr::ColorEyreInstall { source })?;
-    let configuration = get_configuration();
+    let configuration =
+        get_configuration().map_err(|source| AppErr::GetConfiguration { source })?;
     let connection_pool = PgPool::connect(&configuration.database.connection_string())
         .await
         .map_err(|source| AppErr::PostgresConnection { source })?;

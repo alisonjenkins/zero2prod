@@ -5,6 +5,9 @@ pub enum AppErr {
     #[error("Error while installing color_eyre handler: {source}")]
     ColorEyreInstall { source: color_eyre::eyre::Error },
 
+    #[error("Error while getting the configuration: {source}")]
+    GetConfiguration { source: config::ConfigError },
+
     #[error("Error while connecting to Postgres: {source}")]
     PostgresConnection { source: sqlx::Error },
 

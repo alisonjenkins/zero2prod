@@ -31,12 +31,6 @@ impl DatabaseSettings {
     }
 }
 
-pub fn get_configuration() -> Settings {
-    match Settings::new() {
-        Ok(settings) => settings,
-        Err(error) => {
-            eprintln!("Failed to load configuration: {}", error);
-            std::process::exit(1);
-        }
-    }
+pub fn get_configuration() -> Result<Settings, config::ConfigError> {
+    Settings::new()
 }

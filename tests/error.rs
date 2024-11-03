@@ -5,6 +5,9 @@ pub enum SpawnAppErr {
     #[error("Error listening on TCP port: {source}")]
     Listen { source: std::io::Error },
 
+    #[error("Error getting configuration: {source}")]
+    GetConfiguration { source: config::ConfigError },
+
     #[error("Error getting the listen port: {source}")]
     GetListenPort { source: std::io::Error },
 

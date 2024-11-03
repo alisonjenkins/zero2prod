@@ -18,7 +18,8 @@ async fn spawn_app() -> Result<TestApp, SpawnAppErr> {
         .local_addr()
         .map_err(|source| SpawnAppErr::GetListenPort { source })?
         .port();
-    let configuration = get_configuration();
+    let configuration =
+        get_configuration().map_err(|source| SpawnAppErr::GetConfiguration { source })?;
     let db_pool = PgPool::connect(&configuration.database.connection_string())
         .await
         .map_err(|source| SpawnAppErr::PostgresConnection { source })?;
