@@ -16,8 +16,6 @@ jobs:
     steps:
       - name: Run the tests
         run: |
-          ls
-          pwd
           cargo test
 
   dependabot:
