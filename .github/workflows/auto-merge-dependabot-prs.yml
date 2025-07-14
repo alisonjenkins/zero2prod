@@ -16,9 +16,7 @@ jobs:
     steps:
       - name: Run the tests
         run: |
-          ls
-          ls ..
-          cargo test
+          cd zero2prod && cargo test
 
   dependabot:
     needs: [tests]
