@@ -16,6 +16,8 @@ jobs:
     steps:
       - name: Run the tests
         run: |
+          ls
+          ls ..
           cargo test
 
   dependabot:
