@@ -1,6 +1,11 @@
 #!/usr/bin/env bash
 set -eo pipefail
 
+CONTAINER_RUNTIME="docker"
+if command -v podman &>/dev/null; then
+  CONTAINER_RUNTIME="docker"
+fi
+
 if ! command -v psql &>/dev/null; then
   echo >&2 "Error: psql is not installed."
   exit 1
@@ -17,11 +22,11 @@ DB_PASSWORD="${POSTGRES_PASSWORD:=password}"
 DB_NAME="${POSTGRES_DB:=newsletter}"
 DB_PORT="${POSTGRES_PORT:=5432}"
 
-if ! podman ps --filter "name=postgres" | grep 'Up' &>/dev/null; then
+if ! "$CONTAINER_RUNTIME" ps --filter "name=postgres" | grep 'Up' &>/dev/null; then
   set +e
-  podman rm postgres
+  "$CONTAINER_RUNTIME" rm postgres
   set -e
-  podman run -p "$DB_PORT:$DB_PORT" --name postgres -e POSTGRES_USER="$DB_USER" \
+  "$CONTAINER_RUNTIME" run -p "$DB_PORT:$DB_PORT" --name postgres -e POSTGRES_USER="$DB_USER" \
     -e POSTGRES_PASSWORD="$DB_PASSWORD" \
     -e POSTGRES_DB="$DB_NAME" \
     -e POSTGRES_PORT="$DB_PORT" \
