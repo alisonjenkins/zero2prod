@@ -31,7 +31,7 @@ jobs:
         ports:
           - 5432:5432
     env:
-      SQLX_VERSION: 0.8.2
+      SQLX_VERSION: 0.8.6
       SQLX_FEATURES: postgres
     steps:
       - name: Checkout repository
@@ -64,11 +64,11 @@ jobs:
             ~/.cargo/bin/sqlx
           key: ${{ runner.os }}-sqlx-${{ env.SQLX_VERSION }}-${{ env.SQLX_FEATURES }}
 
-      - name: Install sqlx-cli 
+      - name: Install sqlx-cli
         uses: actions-rs/cargo@v1
         if: steps.cache-sqlx.outputs.cache-hit == false
         with:
-          command: install 
+          command: install
           args: >
             sqlx-cli
             --force
@@ -116,7 +116,7 @@ jobs:
         ports:
           - 5432:5432
     env:
-      SQLX_VERSION: 0.8.2
+      SQLX_VERSION: 0.8.6
       SQLX_FEATURES: postgres
     steps:
       - name: Checkout repository
@@ -142,11 +142,11 @@ jobs:
             ~/.cargo/bin/sqlx
           key: ${{ runner.os }}-sqlx-${{ env.SQLX_VERSION }}-${{ env.SQLX_FEATURES }}
 
-      - name: Install sqlx-cli 
+      - name: Install sqlx-cli
         uses: actions-rs/cargo@v1
         if: steps.cache-sqlx.outputs.cache-hit == false
         with:
-          command: install 
+          command: install
           args: >
             sqlx-cli
             --force
@@ -180,7 +180,7 @@ jobs:
         ports:
           - 5432:5432
     env:
-      SQLX_VERSION: 0.8.2
+      SQLX_VERSION: 0.8.6
       SQLX_FEATURES: postgres
     steps:
       - name: Checkout repository
@@ -205,11 +205,11 @@ jobs:
             ~/.cargo/bin/sqlx
           key: ${{ runner.os }}-sqlx-${{ env.SQLX_VERSION }}-${{ env.SQLX_FEATURES }}
 
-      - name: Install sqlx-cli 
+      - name: Install sqlx-cli
         uses: actions-rs/cargo@v1
         if: steps.cache-sqlx.outputs.cache-hit == false
         with:
-          command: install 
+          command: install
           args: >
             sqlx-cli
             --force
