@@ -7,10 +7,12 @@ on:
   push:
     branches:
       - root-chapter-03-part1
+      - main
   pull_request:
     types: [ opened, synchronize, reopened ]
     branches:
       - root-chapter-03-part1
+      - main
 
 env:
   CARGO_TERM_COLOR: always
@@ -29,7 +31,7 @@ jobs:
         ports:
           - 5432:5432
     env:
-      SQLX_VERSION: 0.5.5
+      SQLX_VERSION: 0.8.6
       SQLX_FEATURES: postgres
     steps:
       - name: Checkout repository
@@ -109,7 +111,7 @@ jobs:
         ports:
           - 5432:5432
     env:
-      SQLX_VERSION: 0.5.5
+      SQLX_VERSION: 0.8.6
       SQLX_FEATURES: postgres
     steps:
       - name: Checkout repository
@@ -167,7 +169,7 @@ jobs:
         ports:
           - 5432:5432
     env:
-      SQLX_VERSION: 0.5.5
+      SQLX_VERSION: 0.8.6
       SQLX_FEATURES: postgres
     steps:
       - name: Checkout repository
