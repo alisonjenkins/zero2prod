@@ -7,10 +7,12 @@ on:
   push:
     branches:
       - root-chapter-03-part1
+      - main
   pull_request:
     types: [ opened, synchronize, reopened ]
     branches:
       - root-chapter-03-part1
+      - main
 
 env:
   CARGO_TERM_COLOR: always
@@ -29,11 +31,15 @@ jobs:
         ports:
           - 5432:5432
     env:
-      SQLX_VERSION: 0.5.5
+      SQLX_VERSION: 0.8.2
       SQLX_FEATURES: postgres
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+      - name: Install mold linker
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y mold clang
       - name: Cache dependencies
         id: cache-dependencies
         uses: actions/cache@v4
@@ -75,6 +81,7 @@ jobs:
         run: |
           sudo apt-get install libpq-dev -y
           SKIP_DOCKER=true ./scripts/init_db.sh
+          echo "DATABASE_URL=postgres://postgres:password@localhost:5432/newsletter" >> $GITHUB_ENV
 
       - name: Run cargo test
         uses: actions-rs/cargo@v1
@@ -109,11 +116,16 @@ jobs:
         ports:
           - 5432:5432
     env:
-      SQLX_VERSION: 0.5.5
+      SQLX_VERSION: 0.8.2
       SQLX_FEATURES: postgres
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+
+      - name: Install mold linker
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y mold clang
 
       - name: Install stable toolchain
         uses: actions-rs/toolchain@v1
@@ -147,6 +159,7 @@ jobs:
         run: |
           sudo apt-get install libpq-dev -y
           SKIP_DOCKER=true ./scripts/init_db.sh
+          echo "DATABASE_URL=postgres://postgres:password@localhost:5432/newsletter" >> $GITHUB_ENV
 
       - name: Run clippy
         uses: actions-rs/clippy-check@v1
@@ -167,11 +180,16 @@ jobs:
         ports:
           - 5432:5432
     env:
-      SQLX_VERSION: 0.5.5
+      SQLX_VERSION: 0.8.2
       SQLX_FEATURES: postgres
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+
+      - name: Install mold linker
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y mold clang
 
       - name: Install stable toolchain
         uses: actions-rs/toolchain@v1
@@ -204,6 +222,7 @@ jobs:
         run: |
           sudo apt-get install libpq-dev -y
           SKIP_DOCKER=true ./scripts/init_db.sh
+          echo "DATABASE_URL=postgres://postgres:password@localhost:5432/newsletter" >> $GITHUB_ENV
 
       - name: Run cargo-tarpaulin
         uses: actions-rs/tarpaulin@v0.1
